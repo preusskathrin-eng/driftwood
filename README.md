@@ -110,7 +110,7 @@ Export-ModuleMember -Function Show-Driftwood
 ```powershell
 $ModuleDir = "$HOME\Documents\PowerShell\Modules\driftwood"
 
-# 1. Den optimierten Launcher ohne das zerstörerische zweite "cls" definieren
+# 1. Define the optimized launcher without the destructive second "cls"
 $Lines = @(
     "Import-Module '$HOME\Documents\PowerShell\Modules\driftwood\driftwood.psm1' -Force",
     "cls",
@@ -134,10 +134,10 @@ $Lines = @(
     "if(`$e -eq 'y'){ Show-Driftwood -Path `$p -MaxDepth `$t -Include `$f -OpenExplorer } else { Show-Driftwood -Path `$p -MaxDepth `$t -Include `$f }"
 )
 
-# 2. Datei schreiben
+# 2. Write file
 [System.IO.File]::WriteAllLines("$ModuleDir\driftwood-launcher.ps1", $Lines)
 
-# 3. Shortcut verknüpfen
+# 3. Link Shortcut
 $WshShell = New-Object -ComObject WScript.Shell
 $Shortcut = $WshShell.CreateShortcut("$HOME\Desktop\driftwood.lnk")
 $Shortcut.TargetPath = "pwsh.exe"
@@ -145,7 +145,7 @@ $Shortcut.Arguments = "-NoExit -ExecutionPolicy Bypass -File `"$ModuleDir\driftw
 $Shortcut.IconLocation = "imageres.dll,67"
 $Shortcut.Save()
 
-Write-Host "✅ v2 Launcher updated! Logo will now stay visible." -ForegroundColor Green
+Write-Host "✅ driftwood v2 shortcut created!" -ForegroundColor Green
 ```
 
 ---
