@@ -142,7 +142,7 @@ $WshShell = New-Object -ComObject WScript.Shell
 $Shortcut = $WshShell.CreateShortcut("$HOME\Desktop\driftwood.lnk")
 $Shortcut.TargetPath = "pwsh.exe"
 $Shortcut.Arguments = "-NoExit -ExecutionPolicy Bypass -File `"$ModuleDir\driftwood-launcher.ps1`""
-$Shortcut.IconLocation = "imageres.dll,67"
+$Shortcut.IconLocation = "pwsh.exe,0"
 $Shortcut.Save()
 
 Write-Host "✅ driftwood v2 shortcut created!" -ForegroundColor Green
