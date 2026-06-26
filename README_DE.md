@@ -51,11 +51,74 @@ New-Item -ItemType Directory -Force -Path "$HOME\Documents\PowerShell\Modules\dr
 
 ### 2. Aktuellen Code in driftwood.psm1 einfügen
 
-*(kopiere die Funktion `Show-Driftwood` aus dem Repo in die Datei)*
+```powershell
+$Code = @'
+function Show-Driftwood {
+    param (
+        [string]$Path = ".",
+        [int]$MaxDepth = 2,
+        [int]$CurrentDepth = 0,
+        [string[]]$Include = @("*"),   # z.B. "*.ps1","*.md"
+        [switch]$OpenExplorer
+    )
+
+    if ($CurrentDepth -eq 0) { 
+        $Resolved = Resolve-Path $Path
+        Write-Host "📂 Target: $Resolved" -ForegroundColor Cyan 
+        if ($OpenExplorer) { explorer $Resolved }
+    }
+
+    if ($CurrentDepth -ge $MaxDepth) { return }
+
+    try {
+        $Items = Get-ChildItem -Path $Path -Include $Include -ErrorAction SilentlyContinue |
+                 Sort-Object -Property @{Expression={$_.PSIsContainer}; Descending=$true}, Name
+
+        $Count = $Items.Count
+        $i = 0
+
+        foreach ($Item in $Items) {
+            $i++
+            $Indent = "  " * $CurrentDepth
+            $Branch = if ($i -eq $Count) { "└── " } else { "├── " }
+
+            if ($Item.PSIsContainer) {
+                Write-Host "${Indent}${Branch}📁 $($Item.Name)" -ForegroundColor Yellow
+                Show-Driftwood -Path $Item.FullName -MaxDepth $MaxDepth -CurrentDepth ($CurrentDepth + 1) -Include $Include
+            } else {
+                $Size = if ($Item.Length -gt 1MB) { 
+                            "{0:N1} MB" -f ($Item.Length / 1MB) 
+                        } elseif ($Item.Length -gt 1KB) { 
+                            "{0:N1} KB" -f ($Item.Length / 1KB) 
+                        } else { 
+                            "$($Item.Length) B" 
+                        }
+                Write-Host "${Indent}${Branch}📄 $($Item.Name) " -ForegroundColor Gray -NoNewline
+                Write-Host "[$Size]" -ForegroundColor DarkGray
+            }
+        }
+    } catch {}
+}
+
+Export-ModuleMember -Function Show-Driftwood
+'@
+```
 
 ### 3. Desktop-Shortcut erstellen
 
-*(nutze den aktuellen Creator-Block aus dem Repo oder den Wrapper)*
+```powershell
+$ModulePath = "$HOME\Documents\PowerShell\Modules\driftwood\driftwood.psm1"
+
+$WshShell = New-Object -ComObject WScript.Shell
+$Shortcut = $WshShell.CreateShortcut("$HOME\Desktop\driftwood.lnk")
+$Shortcut.TargetPath = "pwsh.exe"
+$Shortcut.Arguments = "-NoExit -ExecutionPolicy Bypass -Command `"Import-Module '$ModulePath' -Force; cls; Write-Host 'DRIFTWOOD loaded ✓' -ForegroundColor Green; `$p = Read-Host 'Target path? (Default: .)'; if([string]::IsNullOrEmpty(`$p)){`$p='.'}; `$t = Read-Host 'Max depth? (Default: 2)'; if([string]::IsNullOrEmpty(`$t)){`$t=2}; `$f = Read-Host 'Filter (Default: *  e.g. *.ps1,*.md)'; if([string]::IsNullOrEmpty(`$f)){`$f='*'}; Show-Driftwood -Path `$p -MaxDepth `$t -Include `$f -OpenExplorer`""
+$Shortcut.IconLocation = "imageres.dll,67"
+$Shortcut.Save()
+
+Write-Host "✅ Neuer driftwood-Shortcut wurde erstellt!" -ForegroundColor Green
+Write-Host "Teste ihn jetzt per Doppelklick." -ForegroundColor Cyan
+```
 
 ---
 
