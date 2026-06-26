@@ -128,6 +128,26 @@ Show-Driftwood -Path "." -MaxDepth 2 -Include "*.ps1","*.md" -OpenExplorer
 ```
 
 ---
+
+## 🛠️ Alternative: Direct Execution (Without Installation)
+
+If you don't want to install the module or create a desktop shortcut, you can use a standalone `driftwood_v2.ps1`:
+
+1. Download the `driftwood_v2.ps1` file from the repository and place it in the desired folder.
+
+2. Open PowerShell **in this folder** and unlock the script if necessary:
+
+```powershell
+Unblock-File .\driftwood_v2.ps1
+```
+
+3. Run with:
+
+```powershell
+.\driftwood_v2.ps1
+```
+
+---
 ## Old Version (v1)
 
 The original, simpler version without filters and size display is located here:
