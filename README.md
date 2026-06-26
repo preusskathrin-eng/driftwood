@@ -108,14 +108,44 @@ Export-ModuleMember -Function Show-Driftwood
 ### 3. Create a desktop shortcut
 
 ```powershell
+$ModuleDir = "$HOME\Documents\PowerShell\Modules\driftwood"
+
+# 1. Den optimierten Launcher ohne das zerstörerische zweite "cls" definieren
+$Lines = @(
+    "Import-Module '$HOME\Documents\PowerShell\Modules\driftwood\driftwood.psm1' -Force",
+    "cls",
+    "Write-Host '     _      _  __ _                           _ ' -ForegroundColor Cyan",
+    "Write-Host '    | |    (_)/ _| |                         | |' -ForegroundColor Cyan",
+    "Write-Host '  __| |_ __ _| |_| |___      _____   ___   __| |' -ForegroundColor Cyan",
+    "Write-Host ' / _  | ___| |  _| __\ \ /\ / / _ \ / _ \ / _  |' -ForegroundColor Cyan",
+    "Write-Host '| (_| | |  | | | | |_ \ V  V / (_) | (_) | (_| |' -ForegroundColor Cyan",
+    "Write-Host ' \__,_|_|  |_|_|  \__| \_/\_/ \___/ \___/ \__,_|' -ForegroundColor Cyan",
+    "Write-Host '                                                ' -ForegroundColor Cyan",
+    "Write-Host '   [ SHELLS -> TREES // FOLDERS -> PATHS ]' -ForegroundColor DarkGray",
+    "Write-Host ''",
+    "`$p = Read-Host 'Target path? (Default: .)'",
+    "if([string]::IsNullOrEmpty(`$p)){`$p='.'}",
+    "`$t = Read-Host 'Max depth? (Default: 2)'",
+    "if([string]::IsNullOrEmpty(`$t)){`$t=2}",
+    "`$f = Read-Host 'Filter (Default: * e.g. *.ps1,*.md)'",
+    "if([string]::IsNullOrEmpty(`$f)){`$f='*'}",
+    "`$e = Read-Host 'Open Explorer? (y/N)'",
+    "Write-Host '------------------------------------------------' -ForegroundColor DarkGray",
+    "if(`$e -eq 'y'){ Show-Driftwood -Path `$p -MaxDepth `$t -Include `$f -OpenExplorer } else { Show-Driftwood -Path `$p -MaxDepth `$t -Include `$f }"
+)
+
+# 2. Datei schreiben
+[System.IO.File]::WriteAllLines("$ModuleDir\driftwood-launcher.ps1", $Lines)
+
+# 3. Shortcut verknüpfen
 $WshShell = New-Object -ComObject WScript.Shell
 $Shortcut = $WshShell.CreateShortcut("$HOME\Desktop\driftwood.lnk")
 $Shortcut.TargetPath = "pwsh.exe"
-$Shortcut.Arguments = "-NoExit -ExecutionPolicy Bypass -Command `"Import-Module '$HOME\Documents\PowerShell\Modules\driftwood\driftwood.psm1' -Force; cls; Write-Host '   _     _  __ _                     _ ' -ForegroundColor Cyan; Write-Host '  | |   (_)/ _| |___ __ __ ___   ___| |' -ForegroundColor Cyan; Write-Host '  | |__ ||| |_ | __|\ \ / // _ \ / _` |' -ForegroundColor Cyan; Write-Host '  | ' + [char]39 + '_ \|||  _|| |_  \ V /| (_) | (_| |' -ForegroundColor Cyan; Write-Host '  |_.__/|||_|   \__|  \_/  \___/ \__,_|' -ForegroundColor Cyan; Write-Host '                                      ' -ForegroundColor Cyan; Write-Host '    [ SHELLS -> TREES // FOLDERS -> PATHS ]`n' -ForegroundColor DarkGray; `$p = Read-Host 'Target path? (Default: .)'; if([string]::IsNullOrEmpty(`$p)){`$p='.'}; `$t = Read-Host 'Max depth? (Default: 2)'; if([string]::IsNullOrEmpty(`$t)){`$t=2}; `$f = Read-Host 'File filter? (e.g. *.ps1,*.md - Default: *)'; if([string]::IsNullOrEmpty(`$f)){`$f='*'}; `$e = Read-Host 'Open Explorer? (y/N)'; cls; if(`$e -eq 'y'){ Show-Driftwood -Path `$p -MaxDepth `$t -Include `$f -OpenExplorer } else { Show-Driftwood -Path `$p -MaxDepth `$t -Include `$f }`""
+$Shortcut.Arguments = "-NoExit -ExecutionPolicy Bypass -File `"$ModuleDir\driftwood-launcher.ps1`""
 $Shortcut.IconLocation = "imageres.dll,67"
 $Shortcut.Save()
 
-Write-Host "✅ New v2 shortcut created directly!" -ForegroundColor Green
+Write-Host "✅ v2 Launcher updated! Logo will now stay visible." -ForegroundColor Green
 ```
 
 ---
