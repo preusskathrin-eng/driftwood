@@ -38,10 +38,6 @@ New-Item -ItemType Directory -Force -Path "$HOME\Documents\PowerShell\Modules\dr
 ### Step 2: define code
 
 ```powershell
-# 1. Verzeichnis für das driftwood-Modul anlegen
-New-Item -ItemType Directory -Force -Path "$HOME\Documents\PowerShell\Modules\driftwood"
-
-# 2. Internationalen Code definieren
 $Code = @'
 function Show-Driftwood {
     param (
