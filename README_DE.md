@@ -141,7 +141,7 @@ $WshShell = New-Object -ComObject WScript.Shell
 $Shortcut = $WshShell.CreateShortcut("$HOME\Desktop\driftwood.lnk")
 $Shortcut.TargetPath = "pwsh.exe"
 $Shortcut.Arguments = "-NoExit -ExecutionPolicy Bypass -File `"$ModuleDir\driftwood-launcher.ps1`""
-$Shortcut.IconLocation = "imageres.dll,67"
+$Shortcut.IconLocation = "pwsh.exe,0"
 $Shortcut.Save()
 
 Write-Host "✅ Neuer driftwood-Shortcut wurde erstellt!" -ForegroundColor Green
@@ -192,4 +192,3 @@ MIT
 ---
 
 **Enjoy the uncomplicated path query** 🪵🌊
-```
